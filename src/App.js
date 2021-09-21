@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import queryString from 'query-string';
+
 import './App.scss';
 import TodoList from './Components/TodoList';
 import TodoForm from './Components/TodoForm';
 import PostList from './Components/PostList';
+import Pagination from './Components/Pagination';
+import PostFiltersForm from './Components/PostFiltersForm';
+import Clock from './Components/Clock';
+import BetterClock from './Components/BetterClock';
 
 
 
@@ -16,22 +22,35 @@ function App() {
 
   const [postList, setPostList] = useState([]);
 
+  const [pagination, setPagination] = useState({
+    _page: 1,
+    _limit: 10,
+    _totalRows: 1,
+  });
+
+  const [filter, setFilter] = useState({
+    _limit: 10,
+    _page: 1,
+  })
+
   useEffect(() => {
     async function fetchPostList() {
 
       try {
-
-        const requestURL = 'http://js-post-api.herokuapp.com/api/posts?_limit=10&_page=1';
+        const paramsString = queryString.stringify(filter);
+        const requestURL = `http://js-post-api.herokuapp.com/api/posts?${paramsString}`;
         const response = await fetch(requestURL);
         // console.log(response);
         const responseJson = await response.json();
         //log dạng object để có name
-        console.log({ responseJson });
+        //console.log({ responseJson });
 
         // lấy dữ liệu 
-        const { data } = responseJson;
+        const { data, pagination } = responseJson;
         console.log(data);
+        console.log(pagination);
         setPostList(data);
+        setPagination(pagination);
       } catch (error) {
         console.log('Lỗi ', error.message);
       }
@@ -39,7 +58,15 @@ function App() {
     }
 
     fetchPostList();
-  }, [])
+  }, [filter]);
+
+  function handlePageChange(newPage) {
+    console.log('New page ', newPage);
+    setFilter({
+      ...filter,
+      _page: newPage,
+    });
+  }
 
   function handleTodoClick(todo) {
     console.log(todo);
@@ -64,13 +91,33 @@ function App() {
     setTodoList(newTodoList);
   }
 
+  function handleFiltersChange(newFilters) {
+    console.log('new Filters ', newFilters);
+    setFilter({
+      ...filter,
+      _page: 1,
+      title_like: newFilters.searchTerm
+    });
+  };
+
+  const [showClock, setShowClock] = useState(true);
+
   return (
     <div className="App">
-      <h1>React Hooks - TodoList</h1>
-      {/* <TodoForm onSubmit={handleTodoFormSubmit} />
-      <TodoList todos={todoList} onTodoClick={handleTodoClick} /> */}
-
+      {/* <h1>React Hooks - TodoList</h1>
+      <TodoForm onSubmit={handleTodoFormSubmit} />
+      <TodoList todos={todoList} onTodoClick={handleTodoClick} />
+      <PostFiltersForm onSubmit={handleFiltersChange} />
       <PostList posts={postList} />
+      <Pagination
+        pagination={pagination}
+        onPageChange={handlePageChange} /> */}
+
+      <h1>React Hooks - Clock</h1>
+      {showClock && <Clock />}
+      <BetterClock />
+      <button style={{ display: 'block', marginTop: '30px' }} onClick={() => setShowClock(false)}>Hide Clock</button>
+
     </div>
   );
 }

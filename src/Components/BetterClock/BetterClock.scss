@@ -1,0 +1,12 @@
+.better-clock{
+    display: inline-block;
+    width: 300px;
+    border: 1px solid #333;
+    border-radius : 8px;
+    text-align : center;
+    // gọi thẻ con ( thẻ p)
+    &__time {
+        font-size: 44px;
+        color : #333;
+    }
+}
