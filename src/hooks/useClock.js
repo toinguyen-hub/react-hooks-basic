@@ -29,6 +29,7 @@ function useClock(props) {
         }, 1000)
 
 
+        // Hàm callback đã cleanup
         return () => {
             //cleanup
             console.log('Clock cleanup');
